@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,6 +20,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
+
 import cally.sharing.beans.Cally_Member;
 import cally.sj.beans.Sj_m_VO;
 import cally.sj.dao.Sj_Dao;
@@ -28,6 +30,16 @@ import cally.sj.dao.Sj_Dao;
 public class Sj_Service {
 	@Inject
 	private Sj_Dao sj_dao;
+	
+	
+	public void hm_join(ServletRequest request) {	
+		int mem_num =  Integer.parseInt(request.getParameter("mem_num"));
+		String sex = request.getParameter("sex");
+	      Map<String, Object> param = new HashMap<>();	
+	      param.put("mem_num", mem_num);
+	      param.put("sex", sex);
+	      sj_dao.hm_join(param,request);
+	}
 	
 	public void callyM_Service( ServletRequest request, HttpServletRequest req) {
 		Cally_Member loginUser = (Cally_Member) req.getSession().getAttribute("loginUser");		
@@ -38,14 +50,9 @@ public class Sj_Service {
 		Sj_m_VO sjlogin = sj_dao.sjlogin(id);
 		req.getSession().setAttribute("sjlogin", sjlogin);
 	}
-	public void hm_join(ServletRequest request) {	
-		int mem_num =  Integer.parseInt(request.getParameter("mem_num"));
-		String sex = request.getParameter("sex");
-	      Map<String, Object> param = new HashMap<>();	
-	      param.put("mem_num", mem_num);
-	      param.put("sex", sex);
-	      sj_dao.hm_join(param,request);
-	}
+	
+	
+	
 	
 
 	public void food_search(ServletRequest request, String desc_kor) {
@@ -53,7 +60,10 @@ public class Sj_Service {
 		param.put("DESC_KOR", desc_kor);
 		sj_dao.food_search(request, param,desc_kor);
 		
-	}	
+	}
+
+	
+	
 	public void food_search(ServletRequest request) {		
 		String desc_kor = request.getParameter("desc_kor");
 		 if (Objects.isNull(desc_kor)) {
@@ -158,7 +168,6 @@ public class Sj_Service {
 			int f_no = Integer.parseInt(F_NO[i]);
 
 			if (f_no == 0) {
-
 				float nu1 = Float.parseFloat(NUTR_CONT1[i]);
 				float nu2 = Float.parseFloat(NUTR_CONT2[i]);
 				float nu3 = Float.parseFloat(NUTR_CONT3[i]);
@@ -190,9 +199,6 @@ public class Sj_Service {
 				Map<String, Object> map = sj_dao.counter_post_food_up(foodup,request,param);
 				map.put("f_no", f_no);
 				sj_dao.counter_list(request, map);
-				
-				
-				
 			} else {
 				Map<String, Object> map = new HashMap<>();
 				map.put("the_code", the_code);
@@ -435,7 +441,14 @@ public class Sj_Service {
 		
 	}
 
+	public String days_post(ServletRequest request, HttpServletRequest req) {
+		Cally_Member loginUser = (Cally_Member) req.getSession().getAttribute("loginUser");		
+		String id  = loginUser.getMem_id();				
+		Gson gson = new Gson();		
+		return gson.toJson(sj_dao.days_post(id));		
+	}
 
+	
 
 
 

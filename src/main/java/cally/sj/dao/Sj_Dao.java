@@ -1,5 +1,6 @@
 package cally.sj.dao;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -8,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
+
+import com.google.gson.Gson;
 
 import cally.sharing.beans.Cally_Member;
 import cally.sj.beans.Sj_m_VO;
@@ -44,31 +47,14 @@ public class Sj_Dao {
 
 	public void counter(HttpServletRequest request, Map<String, Object> param) {
 		param.put("doy_code", session.selectOne("mapper.sj.sjMapper.today_search", param));// 데이트테이블 번호get
-		request.setAttribute("day_list_1", session.selectList("mapper.sj.sjMapper.re_select_1", param));// 아침
-		request.setAttribute("day_list_2", session.selectList("mapper.sj.sjMapper.re_select_2", param));// 점심
-		request.setAttribute("day_list_3", session.selectList("mapper.sj.sjMapper.re_select_3", param));// 아침
-		request.setAttribute("day_list_4", session.selectList("mapper.sj.sjMapper.re_select_4", param));// 점심
-		request.setAttribute("tdy_cal", session.selectList("mapper.sj.sjMapper.today_plus", param));// 리턴값
-		request.setAttribute("img", session.selectList("mapper.sj.sjMapper.img_select", param));// 이미지
-		System.out.println(param);
+		counter_list(request,param);
 	}
 
 	public void counter_post(HttpServletRequest request, Map<String, Object> param) {
 		session.selectList("mapper.sj.sjMapper.p_sj_today_search", param);// 프로시저
 	}
-
-	public void counter_post_up(HttpServletRequest request, Map<String, Object> param, Map<String, Object> map) {
-		map.put("doy_code", session.selectOne("mapper.sj.sjMapper.today_search", param));// 데이트테이블 번호get
-		System.out.println(map);
-		session.insert("mapper.sj.sjMapper.re_insert", map); // 데이터 등록
-		request.setAttribute("day_list_1", session.selectList("mapper.sj.sjMapper.re_select_1", map));// 아침
-		request.setAttribute("day_list_2", session.selectList("mapper.sj.sjMapper.re_select_2", map));// 아침
-		request.setAttribute("day_list_3", session.selectList("mapper.sj.sjMapper.re_select_3", map));// 아침
-		request.setAttribute("day_list_4", session.selectList("mapper.sj.sjMapper.re_select_4", map));// 아침
-		request.setAttribute("tdy_cal", session.selectList("mapper.sj.sjMapper.today_plus", map));// 리턴값
-		request.setAttribute("img", session.selectList("mapper.sj.sjMapper.img_select", map));// 이미지
-		
-	}
+	
+	
 	public void counter_list(HttpServletRequest request, Map<String, Object> map) {
 		request.setAttribute("day_list_1", session.selectList("mapper.sj.sjMapper.re_select_1", map));// 아침
 		request.setAttribute("day_list_2", session.selectList("mapper.sj.sjMapper.re_select_2", map));// 점심
@@ -84,22 +70,27 @@ public class Sj_Dao {
 	}
 
 	// api데이터 db등록프로시저
-	public Map<String, Object> counter_post_food_up(Map<String, Object> foodup, HttpServletRequest request,
-			Map<String, Object> param) {
+	public Map<String, Object> counter_post_food_up(
+			Map<String, Object> foodup, HttpServletRequest request,Map<String, Object> param) {
 		foodup.put("doy_code", session.selectOne("mapper.sj.sjMapper.today_search", param));
 		session.insert("mapper.sj.sjMapper.api_re_up", foodup);
 		return foodup;
 	}
 
-	
+	// 데이터 등록
+		public void counter_post_up(HttpServletRequest request, Map<String, Object> param, Map<String, Object> map) {
+			map.put("doy_code", session.selectOne("mapper.sj.sjMapper.today_search", param));// 데이트테이블 번호get
+			System.out.println(map);
+			session.insert("mapper.sj.sjMapper.re_insert", map); // 데이터 등록
+			counter_list(request,map);
+			
+		}
 
 	
 
 	public void img( Map<String, Object> imgmap, HttpServletRequest request, Map<String, Object> param) {
-		
 		imgmap.put("doy_code", session.selectOne("mapper.sj.sjMapper.today_search", param));// 데이트테이블 번호get
 		session.insert("mapper.sj.sjMapper.img_insert", imgmap);
-		
 		request.setAttribute("img", session.selectList("mapper.sj.sjMapper.img_select", imgmap));// 이미지
 		
 		
@@ -119,20 +110,18 @@ public class Sj_Dao {
 		request.setAttribute("c_te", session.selectList("mapper.sj.sjMapper.c_te", mymap));
 		
 	}
-
-
-
-
-
-
-
-
-
+	
 	public Sj_m_VO sjlogin(String id) {
 		Sj_m_VO vo =   session.selectOne("mapper.sj.sjMapper.c_te_login2", id);
 		return vo;
 	}
-
+	
+	public ArrayList<Object> days_post(String id) {
+		ArrayList<Object> list = new ArrayList<>();
+		list.add(session.selectList("mapper.sj.sjMapper.days", new Cally_Member(id)));		
+		return list;
+	}
+	
 
 
 

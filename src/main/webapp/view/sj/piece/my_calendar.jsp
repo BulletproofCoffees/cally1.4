@@ -75,7 +75,7 @@
         var url = decodeURIComponent(location.href);      
         var params = decodeURIComponent(location.href).substring( url.indexOf('=')+1, url.length ); 
        
-        console.log($("div.pignose-calendar-body").find('div').attr('data-date') == params);
+        /* onsole.log($("div.pignose-calendar-body").find('div').attr('data-date') == params); */
     });
     //]]>
     

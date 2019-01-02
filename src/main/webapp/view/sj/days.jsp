@@ -11,7 +11,7 @@
 		<div class="col-lg-12 main-chart js_hame ">
 <!-- ------------------------------------------------------- -->
         <aside class="col-lg-12 mt showback">
-        
+        <p id ="day">${daylist}</p>
          <div id='calendar'></div> 
         
           </aside>
@@ -56,7 +56,7 @@ $.ajax({
 	success : function(data) {	
 		var obj = data;
 		 var a = obj[0];
-		 
+		 console.log(a);
 		 $(a).each(function(day,e){
 		  var test = {
 				    title: e.CAL+'cal',
@@ -66,27 +66,18 @@ $.ajax({
 		  daycal.push(test); 
 		
 		 });		 
-		 $(document).ready(function() {			  
-			  $('#calendar').fullCalendar({			   
-			    events: daycal
-			  });
-			  // 페이지 이동
-			  $('td').on("click", function() {					
-					 location.replace('${pageContext.request.contextPath}/sj/counter/='+$(this).find('.fc-day').attr("data-date")); 
-				});
-			
+		 $(document).ready(function() {	
+			 
+			 $('#calendar').fullCalendar({			   
+				    events: daycal,
+				    selectable: true,				    
+				    dayClick: function(date) {
+				      location.replace('${pageContext.request.contextPath}/sj/counter/='+date.format());
+				    }
+				  });
+		
 			});		
 	}
 });
-
-
-
-
-
-
-
-
-
-	
 
 </script>
